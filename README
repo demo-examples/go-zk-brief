@@ -16,6 +16,7 @@
 url: create/
 参数::
 
+    key:
     destName: 服务名
     zkHost: zk集群名(qa, yz, g1)
 
@@ -30,6 +31,7 @@ url: create/
 url: add/
 参数::
 
+    key:
     destName:
     zkHost:
     serverHost:
@@ -47,6 +49,7 @@ url: add/
 url: delete/
 参数::
 
+    key:
     destName:
     zkHost:
 
@@ -61,18 +64,20 @@ url: delete/
 url: get/
 参数::
 
+    key
     destName:
     zkHost:
 
 返回值::
 
-    {code: <code>, value: <value>}
-    1: 成功
     0: 失败
+    {code: 0, reason: <reason>}
+    1: 成功
+    {code:1, data: <data>}
 
 举例说明::
 
-    {"code": 0, "value": "interal server error!"}
+    {"code": 0, "reason": "interal server error!"}
 
     {"code" : 1, "value" : [
        {"host" : "192.168.1.1", "port" : 8080},
