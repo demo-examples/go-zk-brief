@@ -32,8 +32,6 @@ const (
 	ZKPATH = "/soa/services"
 )
 
-var c interface{}
-
 func get(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
@@ -64,14 +62,6 @@ func get(w http.ResponseWriter, r *http.Request) {
 
 //	destName = destNames[0]
 //	zkHost = zkHosts[0]
-
-	connectZK()
-
-	fmt.Println(rtnGet)
-	fmt.Fprintf(w, "111")
-}
-
-func connectZK() {
 	fmt.Println("connect zk!")
 	c, _, err := zk.Connect([]string{fmt.Sprintf("%s:%d", ZKHOST, ZKPORT)}, time.Second)
 	if(err != nil) {
@@ -83,10 +73,23 @@ func connectZK() {
 	if err != nil {
 		panic(err)
 	}
+
+	var servers []ServerConf
+
+	for i, v := range children {
+//		fmt.Println(i, v)
+		server := &ServerConf{v,}
+	}
+
 	fmt.Printf("-----%+v %+v\n", children, stat)
 	e := <-ch
 	fmt.Printf("=====%+v\n", e)
+
+
+	fmt.Println(rtnGet)
+	fmt.Fprintf(w, "111")
 }
+
 
 func main() {
 
