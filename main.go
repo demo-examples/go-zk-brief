@@ -44,8 +44,8 @@ type RtnServerlist struct {
 const (
 	KEY = "1122-3434"
 //	ZKHOST = "192.168.35.141"
-//	ZKHOST = "192.168.129.213"
-	ZKHOST = "192.168.113.212"
+	ZKHOST = "192.168.129.213"
+//	ZKHOST = "192.168.113.212"
 	ZKPORT = 2181
 	ZKPATH = "/soa/services"
 )
