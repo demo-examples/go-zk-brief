@@ -9,9 +9,16 @@ import (
 	"github.com/samuel/go-zookeeper/zk"
 )
 
+type ZkServer struct {
+	ServiceEndpoint ServerConf
+	additionalEndpoints interface{}   // not used
+	status interface{}   // not used
+	shard interface{}   // not used
+}
+
 type RtnError struct {
 	Code int
-	Reason string
+	Reason interface{}
 }
 
 type ServerConf struct {
@@ -19,50 +26,120 @@ type ServerConf struct {
 	Port int
 }
 
-type RtnGet struct {
+type Service struct {
+	Service string
+}
+
+type RtnServicelist struct {
 	Code int
-	Data []ServerConf
+	Services []Service
+}
+
+
+type RtnServerlist struct {
+	Code int
+	Servers []ServerConf
 }
 
 const (
 	KEY = "1122-3434"
 //	ZKHOST = "192.168.35.141"
-	ZKHOST = "192.168.129.213"
+//	ZKHOST = "192.168.129.213"
+	ZKHOST = "192.168.113.212"
 	ZKPORT = 2181
 	ZKPATH = "/soa/services"
 )
 
-func get(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
+func serverlist(w http.ResponseWriter, r *http.Request) {
 
+	defer handleError(w)
+	r.ParseForm()
+	
 	keys := r.Form["key"]
 	destNames := r.Form["destName"]
-	zkHosts := r.Form["zkHost"]
+	zkNodes := r.Form["zkNode"]
 
 	var rtnError RtnError
-	var rtnGet RtnGet
-	var rtnJson []byte
+//	var rtnServers RtnServerlist
+//	var rtnJson []byte
 	rtnError.Code = 0
 
 	// 参数检验
-	if(len(destNames) !=1 || len(zkHosts) != 1 || len(keys) !=1) {
-		rtnError.Reason = "wrong param num"
-		rtnJson, _ = json.Marshal(rtnError)
-		fmt.Fprintf(w, string(rtnJson))
-		return
+	if(len(destNames) != 1 || len(zkNodes) != 1 || len(keys) !=1) {
+		panic("wrong param num")
 	}
 
 	// 判断key是否正确
 	if(keys[0] != KEY) {  // @todo 修改为通过私钥判断的?
-		rtnError.Reason="wrong key"
-		rtnJson, _ = json.Marshal(rtnError)
-		fmt.Fprintf(w, string(rtnJson))
-		return
+		panic("wrong key")
 	}
 
-//	destName = destNames[0]
-//	zkHost = zkHosts[0]
+//	zkNode = zkNodes[0]
 	fmt.Println("connect zk!")
+
+	c, _, err := zk.Connect([]string{fmt.Sprintf("%s:%d", ZKHOST, ZKPORT)}, time.Second)
+	if(err != nil) {
+		panic(err)
+	}
+	defer c.Close()
+
+	zkServerPath := ZKPATH + "/" + destNames[0]
+	children, _, _, err := c.ChildrenW(zkServerPath)
+	if(err != nil) {
+		panic(err)
+	}
+
+	var servers []ServerConf
+	for _, child := range children {
+		jsonServer, _, err := c.Get(zkServerPath + "/" + child)
+		if(err != nil) {
+			panic(err)
+		}
+		var zkserver ZkServer
+
+		err = json.Unmarshal(jsonServer, &zkserver)
+		if(err != nil) {
+			panic(err)
+		}
+
+		servers = append(servers, zkserver.ServiceEndpoint)
+	}
+
+	rtnServer := &RtnServerlist {
+		Code : 1,
+		Servers : servers,
+	}
+
+	jsonRtn, err := json.Marshal(rtnServer)
+	if(err != nil) {
+		panic(err)
+	}
+	fmt.Fprintf(w, string(jsonRtn))
+}
+
+func servicelist(w http.ResponseWriter, r *http.Request) {
+	defer handleError(w)
+	r.ParseForm()
+
+	keys := r.Form["key"]
+	zkNodes := r.Form["zkNode"]
+
+	var rtnError RtnError
+	var rtnJson []byte
+	rtnError.Code = 0
+
+	// 参数检验
+	if(len(zkNodes) != 1 || len(keys) !=1) {
+		panic("wrong param num")
+	}
+
+	// 判断key是否正确
+	if(keys[0] != KEY) {  // @todo 修改为通过私钥判断的?
+		panic("wrong key")
+	}
+
+//	zkNode = zkNodes[0]
+//	fmt.Println("connect zk!")
 	c, _, err := zk.Connect([]string{fmt.Sprintf("%s:%d", ZKHOST, ZKPORT)}, time.Second)
 	if(err != nil) {
 		panic(err)
@@ -74,26 +151,35 @@ func get(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	var servers []ServerConf
+	var services []Service
 
-	for i, v := range children {
+	for _, v := range children {
 //		fmt.Println(i, v)
-		server := &ServerConf{v,}
+		services = append(services, Service{Service : v})
 	}
 
-	fmt.Printf("-----%+v %+v\n", children, stat)
-	e := <-ch
-	fmt.Printf("=====%+v\n", e)
+	fmt.Println(services)
+
+	rtnServices := &RtnServicelist{
+		Code : 1,
+		Services : services,
+	}
+	rtnJson, _ = json.Marshal(rtnServices)
 
 
-	fmt.Println(rtnGet)
-	fmt.Fprintf(w, "111")
+	fmt.Printf("-----%+v %+v   %+v\n", children, stat, ch)
+//	e := <-ch
+
+
+	fmt.Fprintf(w, string(rtnJson))
+
 }
 
 
 func main() {
 
-	http.HandleFunc("/get", get)
+	http.HandleFunc("/servicelist", servicelist)
+	http.HandleFunc("/serverlist", serverlist)
 	err := http.ListenAndServe(":9090", nil)
 	if err != nil {
 		log.Fatal("ListenAndServe:", err)
@@ -101,4 +187,18 @@ func main() {
 
 }
 
+
+func handleError(w http.ResponseWriter){
+/*
+	if e:= recover(); e != nil {
+//		fmt.Println(e)
+		var rtnError RtnError
+		var rtnJson []byte
+		rtnError.Code = 0
+		rtnError.Reason = e
+		rtnJson, _ = json.Marshal(rtnError)
+		fmt.Fprintf(w, string(rtnJson))
+	}
+*/
+}
 

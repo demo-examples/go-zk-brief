@@ -20,7 +20,7 @@ url: create/
 
     key:
     destName: 服务名
-    zkHost: zk集群名(qa, yz, g1)
+    zkNode: zk集群名(qa, yz, g1)
 
 返回值:
 
@@ -35,7 +35,7 @@ url: add/
 
     key:
     destName:
-    zkHost:
+    zkNode:
     serverHost:
     serverPort:
 
@@ -53,7 +53,7 @@ url: delete/
 
     key:
     destName:
-    zkHost:
+    zkNode:
 
 返回值::
 
@@ -67,38 +67,61 @@ url: servicelist/
 参数::
 
     key
-    zkHost
+    zkNode
 
 返回值::
 
-    {code:1, serverlist: [
+    {code:1, services: [
         {service: <service>},
         {service: <service>}
+    ]}
+
+举例说明::
+
+    {"code" : 1, "services" [
+        {"service" : "ip2city.http"},
+        {"service" : "idserver.thrift.http"}
     ]}
 
 
 [接口]查看指定服务的机器列表
 ----------------------------------
-url: get/
+url: serverlist/
 参数::
 
     key
     destName:
-    zkHost:
+    zkNode:
 
 返回值::
 
-    0: 失败
-    {code: 0, reason: <reason>}
     1: 成功
     {code:1, data: <data>}
 
 举例说明::
 
-    {"code": 0, "reason": "interal server error!"}
-
-    {"code" : 1, "value" : [
+    {"code" : 1, "servers" : [
        {"host" : "192.168.1.1", "port" : 8080},
        {"host" : "192.168.1.2", "port" : 8080},
        {"host" : "192.168.1.3", "port" : 8080}
     ]}
+
+
+
+错误返回值
+----------------
+::
+
+    0: 失败
+    {code: 0, reason: <reason>}
+
+举例::
+
+    
+    {"code": 0, "reason": "interal server error!"}
+
+    {"Code":0,"Reason":{"Value":"object","Type":{}}}
+
+
+
+
