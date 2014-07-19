@@ -1,7 +1,8 @@
-
-
-
 接口说明
+=============
+
+
+接口需知
 =============
 1. 以 `ip2city.http` 为例
 2. zk集群名称说明::
@@ -11,11 +12,13 @@
     g1:  g1集群
 
 3. 所有操作都是在 `/soa/services` 目录下
+4. 返回值code为1表示请求成功，为0表示请求失败
+
 
 
 [接口]创建结点
 -------------------
-url: create/
+url: createnode/
 参数::
 
     key:
@@ -24,42 +27,8 @@ url: create/
 
 返回值:
 
-    {code: <code>, reason: <reason>}
-    1: 成功
-    0: 失败
+    {code: 1}
 
-[接口]新增服务
--------------------
-url: add/
-参数::
-
-    key:
-    destName:
-    zkNode:
-    serverHost:
-    serverPort:
-
-返回值::
-
-    {code: <code>, reason: <reason>}
-    1: 成功
-    0: 失败
-
-
-[接口]删除服务(需慎重)
---------------------------
-url: delete/
-参数::
-
-    key:
-    destName:
-    zkNode:
-
-返回值::
-
-    {code: <code>, reason: <reason>}
-    1: 成功
-    0: 失败
 
 [接口]查看服务列表
 ------------------------
@@ -84,7 +53,35 @@ url: servicelist/
     ]}
 
 
-[接口]查看指定服务的机器列表
+[接口]新增服务
+-------------------
+url: addservice/
+参数::
+
+    key:
+    destName:
+    zkNode:
+
+返回值::
+
+    {code: 1}
+
+
+[接口]删除服务(需慎重)
+--------------------------
+url: deleteservice/
+参数::
+
+    key:
+    destName:
+    zkNode:
+
+返回值::
+
+    {code: 1}
+
+
+[接口]查看指定服务的服务器列表
 ----------------------------------
 url: serverlist/
 参数::
@@ -95,8 +92,9 @@ url: serverlist/
 
 返回值::
 
-    1: 成功
-    {code:1, data: <data>}
+    {code:1, servers: [
+        {host: <host>, port:<port>}
+    ]}
 
 举例说明::
 
@@ -105,6 +103,40 @@ url: serverlist/
        {"host" : "192.168.1.2", "port" : 8080},
        {"host" : "192.168.1.3", "port" : 8080}
     ]}
+
+
+
+[接口]给指定服务新增服务器
+----------------------------
+url: addserver/
+参数::
+
+    key:
+    destName:
+    zkNode:
+    serverHost:
+    serverPort:
+
+返回值::
+
+    {code: 1}
+
+
+[接口]删除指定服务的服务器
+----------------------------------
+url: deleteserver/
+参数::
+
+    key:
+    destName:
+    zkNode:
+    serverHost:
+    serverPort:
+
+返回值::
+
+    {code: 1}
+
 
 
 

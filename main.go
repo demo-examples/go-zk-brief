@@ -48,6 +48,7 @@ const (
 //	ZKHOST = "192.168.113.212"
 	ZKPORT = 2181
 	ZKPATH = "/soa/services"
+	ZKTIMEOUT = time.Second
 )
 
 func serverlist(w http.ResponseWriter, r *http.Request) {
@@ -175,11 +176,39 @@ func servicelist(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func createnode(w http.ResponseWriter, r *http.Request) {
+	defer handleError(w)
+	r.ParseForm()
+
+	keys := r.Form["keys"]
+	destNames := r.Form["destName"]
+	zkNodes := r.Form["zkNode"]
+
+	// 参数检验
+	if !checkParams(keys, destNames, zkNodes) {
+		panic("wrong param num")
+	}
+
+	// 判断key是否正确
+	if !checkKeys(keys[0]) {  // @todo 修改为通过私钥判断的?
+		panic("wrong key")
+	}
+
+	c, _, err := zk.Connect([]string{fmt.Sprintf("%s:%d", ZKHOST, ZKPORT)}, ZKTIMEOUT)
+	if err != nil {
+		panic(err)
+	}
+	defer c.Close()
+
+
+}
+
 
 func main() {
 
 	http.HandleFunc("/servicelist", servicelist)
 	http.HandleFunc("/serverlist", serverlist)
+	http.HandleFunc("/createnode", createnode)
 	err := http.ListenAndServe(":9090", nil)
 	if err != nil {
 		log.Fatal("ListenAndServe:", err)
@@ -189,7 +218,7 @@ func main() {
 
 
 func handleError(w http.ResponseWriter){
-/*
+
 	if e:= recover(); e != nil {
 //		fmt.Println(e)
 		var rtnError RtnError
@@ -199,6 +228,22 @@ func handleError(w http.ResponseWriter){
 		rtnJson, _ = json.Marshal(rtnError)
 		fmt.Fprintf(w, string(rtnJson))
 	}
-*/
+
 }
 
+// 检查key是否正确，正确返回true, 错误返回false
+func checkKeys(key string) bool{
+	if key == KEY {
+		return true
+	}
+	return false
+}
+
+func checkParams(params ...[]string) bool{
+	for _, param := range params {
+		if len(param) != 1 {
+			return false
+		}
+	}
+	return true
+}
