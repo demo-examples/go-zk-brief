@@ -11,46 +11,48 @@ import (
 )
 
 type ZkServer struct {
-	ServiceEndpoint ServerConf
-	AdditionalEndpoints struct{}   // not used
-	Status interface{}   // not used
-	Shard interface{}   // not used
+	ServiceEndpoint ServerConf     `json:"serviceEndpoint"`
+	AdditionalEndpoints struct{}   `json:"additionalEndpoints"`// not used
+	Status interface{}             `json:status`  // not used
+	Shard interface{}              `json:shard`   // not used
 }
 
 type RtnNormal struct {
-	Code int
+	Code int      `json:"code"`
 }
 
 type RtnError struct {
-	Code int
-	Reason interface{}
+	Code int               `json:"code"`
+	Reason interface{}     `json:"reason"`
 }
 
 type ServerConf struct {
-	Host string
-	Port int
+	Host string            `json: "host"`
+	Port int               `json: "port"`
 }
 
 type ServerConf2 struct {
-	Host string
-	Port int
-	Key string
+	Host string     `json:"host"`
+	Port int        `json:"port"`
+	Key string      `json:"key"`
 }
 
 type Service struct {
-	Service string
+	Service string      `json:"service"`
 }
 
 type RtnServicelist struct {
-	Code int
-	Services []Service
+	Code int                `json:"code"`
+	Services []Service      `json:"services"`
 }
 
 
 type RtnServerlist struct {
-	Code int
-	Servers []ServerConf2
+	Code int                   `json:"code"`
+	Servers []ServerConf2      `json:"servers"`
 }
+
+
 
 const (
 	KEY = "1122-3434"

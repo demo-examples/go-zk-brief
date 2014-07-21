@@ -140,5 +140,24 @@ url: deleteserver/
     {"Code":0,"Reason":{"Value":"object","Type":{}}}
 
 
+实例说明
+---------------
+::
+
+    http://127.0.0.1:9090/servicelist?destName=hello&key=1122-3434&zkidc=qa
+
+    http://127.0.0.1:9090/serverlist?destName=hello&key=1122-3434&zkidc=qa
+
+    http://127.0.0.1:9090/addservice?destName=ip2city&keys=1122-3434&zkidc=qa
+
+    http://127.0.0.1:9090/delservice?destName=ip2city&keys=1122-3434&zkidc=qa
+
+    http://127.0.0.1:9090/addserver?destName=hello&keys=1122-3434&zkidc=qa&serverHost=127.0.0.1&serverPort=888
+
+    http://127.0.0.1:9090/delserver?destName=hello&keys=1122-3434&zkidc=qa&serverKey=member_0000000013
+
+
+
+
 
 
