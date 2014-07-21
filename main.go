@@ -197,7 +197,7 @@ func addservice(w http.ResponseWriter, r *http.Request) {
 	defer handleError(w)
 	r.ParseForm()
 
-	keys := r.Form["keys"]
+	keys := r.Form["key"]
 	destNames := r.Form["destName"]
 	zkNodes := r.Form["zkNode"]
 
@@ -235,7 +235,7 @@ func delservice(w http.ResponseWriter, r *http.Request) {
 	defer handleError(w)
 	r.ParseForm()
 
-	keys := r.Form["keys"]
+	keys := r.Form["key"]
 	destNames := r.Form["destName"]
 	zkNodes := r.Form["zkNode"]
 
@@ -273,7 +273,7 @@ func addserver(w http.ResponseWriter, r *http.Request) {
 	defer handleError(w)
 	r.ParseForm()
 
-	keys := r.Form["keys"]
+	keys := r.Form["key"]
 	destNames := r.Form["destName"]
 	zkNodes := r.Form["zkNode"]
 	serverHost := r.Form["serverHost"]
@@ -317,7 +317,7 @@ func delserver(w http.ResponseWriter, r *http.Request) {
 	defer handleError(w)
 	r.ParseForm()
 
-	keys := r.Form["keys"]
+	keys := r.Form["key"]
 	destNames := r.Form["destName"]
 	zkNodes := r.Form["zkNode"]
 	serverKey := r.Form["serverKey"]
