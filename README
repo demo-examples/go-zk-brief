@@ -55,7 +55,7 @@ url: addservice/
 
 [接口]删除服务(需慎重)
 --------------------------
-url: deleteservice/
+url: delservice/
 参数::
 
     key:
@@ -110,7 +110,7 @@ url: addserver/
 
 [接口]删除指定服务的服务器
 ----------------------------------
-url: deleteserver/
+url: delserver/
 参数::
 
     key:
