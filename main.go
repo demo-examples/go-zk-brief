@@ -5,15 +5,20 @@ import (
 	"net/http"
 	"log"
 	"time"
+	"strconv"
 	"encoding/json"
 	"github.com/samuel/go-zookeeper/zk"
 )
 
 type ZkServer struct {
 	ServiceEndpoint ServerConf
-	additionalEndpoints interface{}   // not used
-	status interface{}   // not used
-	shard interface{}   // not used
+	AdditionalEndpoints struct{}   // not used
+	Status interface{}   // not used
+	Shard interface{}   // not used
+}
+
+type RtnNormal struct {
+	Code int
 }
 
 type RtnError struct {
@@ -24,6 +29,12 @@ type RtnError struct {
 type ServerConf struct {
 	Host string
 	Port int
+}
+
+type ServerConf2 struct {
+	Host string
+	Port int
+	Key string
 }
 
 type Service struct {
@@ -38,18 +49,26 @@ type RtnServicelist struct {
 
 type RtnServerlist struct {
 	Code int
-	Servers []ServerConf
+	Servers []ServerConf2
 }
 
 const (
 	KEY = "1122-3434"
-//	ZKHOST = "192.168.35.141"
-	ZKHOST = "192.168.129.213"
-//	ZKHOST = "192.168.113.212"
-	ZKPORT = 2181
 	ZKPATH = "/soa/services"
 	ZKTIMEOUT = time.Second
 )
+
+//	ZKHOST = "192.168.35.141"
+//	ZKHOST = "192.168.129.213"
+//	ZKHOST = "192.168.113.212"
+//	ZKPORT = 2181
+
+var ZKHOST map[string] string= map[string] string {
+	"qa" : "192.168.35.141:2181",
+//	"qa" : "192.168.129.213:2182",
+	"yz" : "192.168.129.213:2181",
+	"g1" : "192.168.129.213:2181",
+}
 
 func serverlist(w http.ResponseWriter, r *http.Request) {
 
@@ -66,19 +85,14 @@ func serverlist(w http.ResponseWriter, r *http.Request) {
 	rtnError.Code = 0
 
 	// 参数检验
-	if(len(destNames) != 1 || len(zkNodes) != 1 || len(keys) !=1) {
-		panic("wrong param num")
-	}
-
+	checkParams(destNames, zkNodes, keys)
 	// 判断key是否正确
-	if(keys[0] != KEY) {  // @todo 修改为通过私钥判断的?
-		panic("wrong key")
-	}
+	checkKeys(keys[0])
 
 //	zkNode = zkNodes[0]
 	fmt.Println("connect zk!")
 
-	c, _, err := zk.Connect([]string{fmt.Sprintf("%s:%d", ZKHOST, ZKPORT)}, time.Second)
+	c, _, err := zk.Connect([]string{ZKHOST[zkNodes[0]]}, time.Second)
 	if(err != nil) {
 		panic(err)
 	}
@@ -90,8 +104,9 @@ func serverlist(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	var servers []ServerConf
+	var servers []ServerConf2
 	for _, child := range children {
+		fmt.Println(child)
 		jsonServer, _, err := c.Get(zkServerPath + "/" + child)
 		if(err != nil) {
 			panic(err)
@@ -103,7 +118,13 @@ func serverlist(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 
-		servers = append(servers, zkserver.ServiceEndpoint)
+		server := ServerConf2 {
+			Host : zkserver.ServiceEndpoint.Host,
+			Port : zkserver.ServiceEndpoint.Port,
+			Key : child,
+		}
+
+		servers = append(servers, server)
 	}
 
 	rtnServer := &RtnServerlist {
@@ -130,18 +151,13 @@ func servicelist(w http.ResponseWriter, r *http.Request) {
 	rtnError.Code = 0
 
 	// 参数检验
-	if(len(zkNodes) != 1 || len(keys) !=1) {
-		panic("wrong param num")
-	}
-
+	checkParams(zkNodes, keys)
 	// 判断key是否正确
-	if(keys[0] != KEY) {  // @todo 修改为通过私钥判断的?
-		panic("wrong key")
-	}
+	checkKeys(keys[0])
 
 //	zkNode = zkNodes[0]
 //	fmt.Println("connect zk!")
-	c, _, err := zk.Connect([]string{fmt.Sprintf("%s:%d", ZKHOST, ZKPORT)}, time.Second)
+	c, _, err := zk.Connect([]string{ZKHOST[zkNodes[0]]}, time.Second)
 	if(err != nil) {
 		panic(err)
 	}
@@ -176,7 +192,8 @@ func servicelist(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func createnode(w http.ResponseWriter, r *http.Request) {
+func addservice(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("createnode start...")
 	defer handleError(w)
 	r.ParseForm()
 
@@ -185,30 +202,166 @@ func createnode(w http.ResponseWriter, r *http.Request) {
 	zkNodes := r.Form["zkNode"]
 
 	// 参数检验
-	if !checkParams(keys, destNames, zkNodes) {
-		panic("wrong param num")
-	}
-
+	checkParams(keys, destNames, zkNodes)
 	// 判断key是否正确
-	if !checkKeys(keys[0]) {  // @todo 修改为通过私钥判断的?
-		panic("wrong key")
-	}
+	checkKeys(keys[0])
 
-	c, _, err := zk.Connect([]string{fmt.Sprintf("%s:%d", ZKHOST, ZKPORT)}, ZKTIMEOUT)
+	c, _, err := zk.Connect([]string{ZKHOST[zkNodes[0]]}, ZKTIMEOUT)
 	if err != nil {
 		panic(err)
 	}
 	defer c.Close()
 
+	zkServerPath := ZKPATH + "/" + destNames[0]
+//	zkServerPath := "/soa/services"
+
+//	fmt.Println(zkServerPath)
+//	resPath, err := c.Create(zkServerPath, []byte{}, 0, zk.WorldACL(0x1f))
+//	fmt.Println(resPath)
+
+	_, err = c.Create(zkServerPath, []byte{}, 0, zk.WorldACL(0x1f))
+	if err != nil {
+		panic(err)
+	}
+	rtnNormal := &RtnNormal {
+		Code : 1,
+	}
+	rtnJson, _ := json.Marshal(rtnNormal)
+	fmt.Fprint(w, string(rtnJson))
+}
+
+func delservice(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("delservice start...")
+	defer handleError(w)
+	r.ParseForm()
+
+	keys := r.Form["keys"]
+	destNames := r.Form["destName"]
+	zkNodes := r.Form["zkNode"]
+
+	// 参数检验
+	checkParams(keys, destNames, zkNodes)
+	// 判断key是否正确
+	checkKeys(keys[0])
+
+	c, _, err := zk.Connect([]string{ZKHOST[zkNodes[0]]}, ZKTIMEOUT)
+	if err != nil {
+		panic(err)
+	}
+	defer c.Close()
+
+	zkServerPath := ZKPATH + "/" + destNames[0]
+
+//	fmt.Println(zkServerPath)
+	err = c.Delete(zkServerPath, -1)
+
+	if err != nil {
+		panic(err)
+	}
+	rtnNormal := &RtnNormal {
+		Code : 1,
+	}
+	rtnJson, _ := json.Marshal(rtnNormal)
+	fmt.Fprint(w, string(rtnJson))
 
 }
+
+
+
+func addserver(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("addserver start...")
+	defer handleError(w)
+	r.ParseForm()
+
+	keys := r.Form["keys"]
+	destNames := r.Form["destName"]
+	zkNodes := r.Form["zkNode"]
+	serverHost := r.Form["serverHost"]
+	serverPort := r.Form["serverPort"]
+
+
+	// 参数检验
+	checkParams(keys, destNames, zkNodes, serverHost, serverPort)
+	// 判断key是否正确
+	checkKeys(keys[0])
+
+	c, _, err := zk.Connect([]string{ZKHOST[zkNodes[0]]}, ZKTIMEOUT)
+	if err != nil {
+		panic(err)
+	}
+	defer c.Close()
+
+	zkServerPath := ZKPATH + "/" + destNames[0] + "/member_"
+	fmt.Println(zkServerPath)
+
+	serverValue := getServerValue(serverHost[0], serverPort[0])
+//	serverValue := []byte{96, 97}
+//	fmt.Println(serverValue)
+//	_, err = c.Create(zkServerPath, serverValue, zk.FlagEphemeral|zk.FlagSequence, zk.WorldACL(0x1f))
+//	zkPath, err := c.Create(zkServerPath, serverValue, zk.FlagEphemeral|zk.FlagSequence, zk.WorldACL(0x1f))
+	zkPath, err := c.Create(zkServerPath, serverValue, zk.FlagSequence, zk.WorldACL(0x1f))
+	fmt.Println(zkPath)
+	if err != nil {
+		panic(err)
+	}
+	rtnNormal := &RtnNormal {
+		Code : 1,
+	}
+	rtnJson, _ := json.Marshal(rtnNormal)
+	fmt.Fprint(w, string(rtnJson))
+}
+
+
+func delserver(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("delserver start...")
+	defer handleError(w)
+	r.ParseForm()
+
+	keys := r.Form["keys"]
+	destNames := r.Form["destName"]
+	zkNodes := r.Form["zkNode"]
+	serverKey := r.Form["serverKey"]
+
+	// 参数检验
+	checkParams(keys, destNames, zkNodes, serverKey)
+	// 判断key是否正确
+	checkKeys(keys[0])
+
+	c, _, err := zk.Connect([]string{ZKHOST[zkNodes[0]]}, ZKTIMEOUT)
+	if err != nil {
+		panic(err)
+	}
+	defer c.Close()
+
+	zkServerPath := ZKPATH + "/" + destNames[0] + "/" + serverKey[0]
+
+//	fmt.Println(zkServerPath)
+	err = c.Delete(zkServerPath, -1)
+
+	if err != nil {
+		panic(err)
+	}
+	rtnNormal := &RtnNormal {
+		Code : 1,
+	}
+	rtnJson, _ := json.Marshal(rtnNormal)
+	fmt.Fprint(w, string(rtnJson))
+
+}
+
+
 
 
 func main() {
 
 	http.HandleFunc("/servicelist", servicelist)
 	http.HandleFunc("/serverlist", serverlist)
-	http.HandleFunc("/createnode", createnode)
+//	http.HandleFunc("/createnode", createnode)
+	http.HandleFunc("/addservice", addservice)
+	http.HandleFunc("/delservice", delservice)
+	http.HandleFunc("/addserver", addserver)
+	http.HandleFunc("/delserver", delserver)
+
 	err := http.ListenAndServe(":9090", nil)
 	if err != nil {
 		log.Fatal("ListenAndServe:", err)
@@ -220,30 +373,60 @@ func main() {
 func handleError(w http.ResponseWriter){
 
 	if e:= recover(); e != nil {
-//		fmt.Println(e)
+//		fmt.Printf("%+s\n", e)
 		var rtnError RtnError
 		var rtnJson []byte
 		rtnError.Code = 0
-		rtnError.Reason = e
+		rtnError.Reason = 		fmt.Sprintf("%+s", e)
 		rtnJson, _ = json.Marshal(rtnError)
+//		fmt.Println(string(rtnJson))
 		fmt.Fprintf(w, string(rtnJson))
 	}
 
 }
 
 // 检查key是否正确，正确返回true, 错误返回false
-func checkKeys(key string) bool{
+func checkKeys(key string) {
 	if key == KEY {
-		return true
+		return
 	}
-	return false
+	panic("wrong keys")
 }
 
-func checkParams(params ...[]string) bool{
+func checkParams(params ...[]string) {
 	for _, param := range params {
 		if len(param) != 1 {
-			return false
+			panic("wrong params")
 		}
 	}
-	return true
+	return
 }
+
+func getServerValue(host string, strPort string) []byte{
+	port, err := strconv.Atoi(strPort)
+	if err!= nil {
+		panic("port should be int")
+	}
+	
+	serverConf := ServerConf {
+		Host : host,
+		Port : port,
+	}
+	var nothing struct{}
+	serverValue := &ZkServer {
+		ServiceEndpoint : serverConf,
+		AdditionalEndpoints : nothing,
+		Status : "ALIVE",
+		Shard : 1,
+	}
+//	fmt.Println(serverValue)
+	valueJson, err := json.Marshal(serverValue)
+//	fmt.Println(string(valueJson), err)
+	if err != nil {
+		panic(err)
+	}
+	return valueJson
+}
+
+
+
