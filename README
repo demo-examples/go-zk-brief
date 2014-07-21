@@ -5,7 +5,7 @@
 接口需知
 =============
 1. 以 `ip2city.http` 为例
-2. zk集群(参数zkNode)名称说明::
+2. zk集群(参数zkidc)可选值说明::
 
     qa:  测试集群
     yz:  亦庄集群
@@ -22,7 +22,7 @@ url: servicelist/
 参数::
 
     key
-    zkNode
+    zkidc
 
 返回值::
 
@@ -46,7 +46,7 @@ url: addservice/
 
     key:
     destName:
-    zkNode:
+    zkidc:
 
 返回值::
 
@@ -60,7 +60,7 @@ url: deleteservice/
 
     key:
     destName:
-    zkNode:
+    zkidc:
 
 返回值::
 
@@ -74,7 +74,7 @@ url: serverlist/
 
     key
     destName:
-    zkNode:
+    zkidc:
 
 返回值::
 
@@ -99,7 +99,7 @@ url: addserver/
 
     key:
     destName:
-    zkNode:
+    zkidc:
     serverHost:
     serverPort:
 
@@ -115,7 +115,7 @@ url: deleteserver/
 
     key:
     destName:
-    zkNode:
+    zkidc:
     serverKey:
 
 返回值::

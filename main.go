@@ -77,7 +77,7 @@ func serverlist(w http.ResponseWriter, r *http.Request) {
 	
 	keys := r.Form["key"]
 	destNames := r.Form["destName"]
-	zkNodes := r.Form["zkNode"]
+	zkidcs := r.Form["zkidc"]
 
 	var rtnError RtnError
 //	var rtnServers RtnServerlist
@@ -85,14 +85,14 @@ func serverlist(w http.ResponseWriter, r *http.Request) {
 	rtnError.Code = 0
 
 	// 参数检验
-	checkParams(destNames, zkNodes, keys)
+	checkParams(destNames, zkidcs, keys)
 	// 判断key是否正确
 	checkKeys(keys[0])
 
-//	zkNode = zkNodes[0]
+//	zkidc = zkidcs[0]
 	fmt.Println("connect zk!")
 
-	c, _, err := zk.Connect([]string{ZKHOST[zkNodes[0]]}, time.Second)
+	c, _, err := zk.Connect([]string{ZKHOST[zkidcs[0]]}, time.Second)
 	if(err != nil) {
 		panic(err)
 	}
@@ -144,20 +144,20 @@ func servicelist(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
 	keys := r.Form["key"]
-	zkNodes := r.Form["zkNode"]
+	zkidcs := r.Form["zkidc"]
 
 	var rtnError RtnError
 	var rtnJson []byte
 	rtnError.Code = 0
 
 	// 参数检验
-	checkParams(zkNodes, keys)
+	checkParams(zkidcs, keys)
 	// 判断key是否正确
 	checkKeys(keys[0])
 
-//	zkNode = zkNodes[0]
+//	zkidc = zkidcs[0]
 //	fmt.Println("connect zk!")
-	c, _, err := zk.Connect([]string{ZKHOST[zkNodes[0]]}, time.Second)
+	c, _, err := zk.Connect([]string{ZKHOST[zkidcs[0]]}, time.Second)
 	if(err != nil) {
 		panic(err)
 	}
@@ -199,14 +199,14 @@ func addservice(w http.ResponseWriter, r *http.Request) {
 
 	keys := r.Form["key"]
 	destNames := r.Form["destName"]
-	zkNodes := r.Form["zkNode"]
+	zkidcs := r.Form["zkidc"]
 
 	// 参数检验
-	checkParams(keys, destNames, zkNodes)
+	checkParams(keys, destNames, zkidcs)
 	// 判断key是否正确
 	checkKeys(keys[0])
 
-	c, _, err := zk.Connect([]string{ZKHOST[zkNodes[0]]}, ZKTIMEOUT)
+	c, _, err := zk.Connect([]string{ZKHOST[zkidcs[0]]}, ZKTIMEOUT)
 	if err != nil {
 		panic(err)
 	}
@@ -237,14 +237,14 @@ func delservice(w http.ResponseWriter, r *http.Request) {
 
 	keys := r.Form["key"]
 	destNames := r.Form["destName"]
-	zkNodes := r.Form["zkNode"]
+	zkidcs := r.Form["zkidc"]
 
 	// 参数检验
-	checkParams(keys, destNames, zkNodes)
+	checkParams(keys, destNames, zkidcs)
 	// 判断key是否正确
 	checkKeys(keys[0])
 
-	c, _, err := zk.Connect([]string{ZKHOST[zkNodes[0]]}, ZKTIMEOUT)
+	c, _, err := zk.Connect([]string{ZKHOST[zkidcs[0]]}, ZKTIMEOUT)
 	if err != nil {
 		panic(err)
 	}
@@ -275,17 +275,17 @@ func addserver(w http.ResponseWriter, r *http.Request) {
 
 	keys := r.Form["key"]
 	destNames := r.Form["destName"]
-	zkNodes := r.Form["zkNode"]
+	zkidcs := r.Form["zkidc"]
 	serverHost := r.Form["serverHost"]
 	serverPort := r.Form["serverPort"]
 
 
 	// 参数检验
-	checkParams(keys, destNames, zkNodes, serverHost, serverPort)
+	checkParams(keys, destNames, zkidcs, serverHost, serverPort)
 	// 判断key是否正确
 	checkKeys(keys[0])
 
-	c, _, err := zk.Connect([]string{ZKHOST[zkNodes[0]]}, ZKTIMEOUT)
+	c, _, err := zk.Connect([]string{ZKHOST[zkidcs[0]]}, ZKTIMEOUT)
 	if err != nil {
 		panic(err)
 	}
@@ -319,15 +319,15 @@ func delserver(w http.ResponseWriter, r *http.Request) {
 
 	keys := r.Form["key"]
 	destNames := r.Form["destName"]
-	zkNodes := r.Form["zkNode"]
+	zkidcs := r.Form["zkidc"]
 	serverKey := r.Form["serverKey"]
 
 	// 参数检验
-	checkParams(keys, destNames, zkNodes, serverKey)
+	checkParams(keys, destNames, zkidcs, serverKey)
 	// 判断key是否正确
 	checkKeys(keys[0])
 
-	c, _, err := zk.Connect([]string{ZKHOST[zkNodes[0]]}, ZKTIMEOUT)
+	c, _, err := zk.Connect([]string{ZKHOST[zkidcs[0]]}, ZKTIMEOUT)
 	if err != nil {
 		panic(err)
 	}
