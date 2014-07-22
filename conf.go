@@ -5,10 +5,10 @@ import (
 )
 
 const (
-	LISTEN = ":9090"
-	KEY = "1122-3434"
-	ZKPATH = "/soa/services"
-	ZKTIMEOUT = time.Second
+	LISTEN = ":9090"            // 应用启动端口
+	KEY = "1122-3434"           // 验证码
+	ZKPATH = "/soa/services"    // 基于此目录下
+	ZKTIMEOUT = time.Second     // zk连接超时时间
 )
 
 //	ZKHOST = "192.168.35.141"
