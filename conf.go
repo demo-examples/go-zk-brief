@@ -9,6 +9,10 @@ const (
 	KEY = "1122-3434"           // 验证码
 	ZKPATH = "/soa/services"    // 基于此目录下
 	ZKTIMEOUT = time.Second     // zk连接超时时间
+
+	DEFAULT_MIN_MEMORY = 32 << 20
+	DEFAULT_MAX_MEMORY = 1024
+
 )
 
 //	ZKHOST = "192.168.35.141"

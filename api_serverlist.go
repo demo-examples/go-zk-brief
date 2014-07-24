@@ -17,6 +17,8 @@ func serverlist(w http.ResponseWriter, r *http.Request) {
 	destNames := r.Form["destName"]
 	zkidcs := r.Form["zkidc"]
 
+	fmt.Println(keys, destNames, zkidcs)
+
 	var rtnError RtnError
 //	var rtnServers RtnServerlist
 //	var rtnJson []byte
@@ -37,7 +39,7 @@ func serverlist(w http.ResponseWriter, r *http.Request) {
 	defer c.Close()
 
 	zkServerPath := ZKPATH + "/" + destNames[0]
-	children, _, _, err := c.ChildrenW(zkServerPath)
+	children, _, err := c.Children(zkServerPath)
 	if(err != nil) {
 		panic(err)
 	}

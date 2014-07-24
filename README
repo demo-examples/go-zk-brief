@@ -19,6 +19,7 @@
 [接口]查看服务列表
 ------------------------
 url: servicelist/
+类型: GET
 参数::
 
     key
@@ -42,6 +43,7 @@ url: servicelist/
 [接口]新增服务
 -------------------
 url: addservice/
+类型: POST
 参数::
 
     key:
@@ -56,6 +58,7 @@ url: addservice/
 [接口]删除服务(需慎重)
 --------------------------
 url: delservice/
+类型: POST
 参数::
 
     key:
@@ -70,6 +73,7 @@ url: delservice/
 [接口]查看指定服务的服务器列表
 ----------------------------------
 url: serverlist/
+类型: GET
 参数::
 
     key
@@ -95,6 +99,7 @@ url: serverlist/
 [接口]给指定服务新增服务器
 ----------------------------
 url: addserver/
+类型: POST
 参数::
 
     key:
@@ -111,6 +116,7 @@ url: addserver/
 [接口]删除指定服务的服务器
 ----------------------------------
 url: delserver/
+类型: POST
 参数::
 
     key:

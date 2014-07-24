@@ -11,7 +11,7 @@ import(
 func delserver(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("delserver start...")
 	defer handleError(w)
-	r.ParseForm()
+	r.ParseMultipartForm(DEFAULT_MIN_MEMORY)
 
 	keys := r.Form["key"]
 	destNames := r.Form["destName"]

@@ -11,7 +11,8 @@ import(
 func addserver(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("addserver start...")
 	defer handleError(w)
-	r.ParseForm()
+
+	r.ParseMultipartForm(DEFAULT_MIN_MEMORY)
 
 	keys := r.Form["key"]
 	destNames := r.Form["destName"]
@@ -19,6 +20,7 @@ func addserver(w http.ResponseWriter, r *http.Request) {
 	serverHost := r.Form["serverHost"]
 	serverPort := r.Form["serverPort"]
 
+	fmt.Println(keys)
 
 	// 参数检验
 	checkParams(keys, destNames, zkidcs, serverHost, serverPort)

@@ -15,6 +15,8 @@ func servicelist(w http.ResponseWriter, r *http.Request) {
 	keys := r.Form["key"]
 	zkidcs := r.Form["zkidc"]
 
+	fmt.Println(keys, zkidcs)
+
 	var rtnError RtnError
 	var rtnJson []byte
 	rtnError.Code = 0
@@ -32,7 +34,7 @@ func servicelist(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	children, stat, ch, err := c.ChildrenW(ZKPATH)
+	children, stat, err := c.Children(ZKPATH)
 	if err != nil {
 		panic(err)
 	}
@@ -53,7 +55,7 @@ func servicelist(w http.ResponseWriter, r *http.Request) {
 	rtnJson, _ = json.Marshal(rtnServices)
 
 
-	fmt.Printf("-----%+v %+v   %+v\n", children, stat, ch)
+	fmt.Printf("-----%+v %+v   \n", children, stat)
 //	e := <-ch
 
 
