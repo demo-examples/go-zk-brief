@@ -9,13 +9,18 @@ import(
 
 
 func servicelist(w http.ResponseWriter, r *http.Request) {
-	defer handleError(w)
 	r.ParseForm()
 
 	keys := r.Form["key"]
 	zkidcs := r.Form["zkidc"]
 
-	fmt.Println(keys, zkidcs)
+	fmt.Println(r.Form["abc"])
+
+	input := fmt.Sprintf("keys:%v, zkidcs:%v", keys, zkidcs)
+	api := "servicelist"
+	defer handleError(w, input, api)
+
+
 
 	var rtnError RtnError
 	var rtnJson []byte
@@ -34,7 +39,7 @@ func servicelist(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	children, stat, err := c.Children(ZKPATH)
+	children, _, err := c.Children(ZKPATH)
 	if err != nil {
 		panic(err)
 	}
@@ -46,20 +51,18 @@ func servicelist(w http.ResponseWriter, r *http.Request) {
 		services = append(services, Service{Service : v})
 	}
 
-	fmt.Println(services)
+//	fmt.Println(services)
 
 	rtnServices := &RtnServicelist{
 		Code : 1,
 		Services : services,
 	}
 	rtnJson, _ = json.Marshal(rtnServices)
+	rtnStr := string(rtnJson)
 
+	fmt.Fprintf(w, rtnStr)
 
-	fmt.Printf("-----%+v %+v   \n", children, stat)
-//	e := <-ch
-
-
-	fmt.Fprintf(w, string(rtnJson))
+	apilog(input, api, rtnStr)   // 日志记录
 
 }
 

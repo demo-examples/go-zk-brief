@@ -1,26 +1,10 @@
 package main
 
 import(
-	"fmt"
 	"strconv"
 	"encoding/json"
-	"net/http"
 )
 
-func handleError(w http.ResponseWriter){
-
-	if e:= recover(); e != nil {
-//		fmt.Printf("%+s\n", e)
-		var rtnError RtnError
-		var rtnJson []byte
-		rtnError.Code = 0
-		rtnError.Reason = fmt.Sprintf("%+s", e)
-		rtnJson, _ = json.Marshal(rtnError)
-//		fmt.Println(string(rtnJson))
-		fmt.Fprintf(w, string(rtnJson))
-	}
-
-}
 
 // 检查key是否正确，正确返回true, 错误返回false
 func checkKeys(key string) {

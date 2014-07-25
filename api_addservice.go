@@ -9,13 +9,15 @@ import(
 
 
 func addservice(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("createnode start...")
-	defer handleError(w)
 	r.ParseMultipartForm(DEFAULT_MIN_MEMORY)
 
 	keys := r.Form["key"]
 	destNames := r.Form["destName"]
 	zkidcs := r.Form["zkidc"]
+
+	input := fmt.Sprintf("keys:%v, zkidcs:%v, destNames:%v", keys, zkidcs, destNames)
+	api := "addservice"
+	defer handleError(w, input, api)
 
 	// 参数检验
 	checkParams(keys, destNames, zkidcs)
@@ -29,11 +31,6 @@ func addservice(w http.ResponseWriter, r *http.Request) {
 	defer c.Close()
 
 	zkServerPath := ZKPATH + "/" + destNames[0]
-//	zkServerPath := "/soa/services"
-
-//	fmt.Println(zkServerPath)
-//	resPath, err := c.Create(zkServerPath, []byte{}, 0, zk.WorldACL(0x1f))
-//	fmt.Println(resPath)
 
 	_, err = c.Create(zkServerPath, []byte{}, 0, zk.WorldACL(0x1f))
 	if err != nil {
@@ -43,6 +40,9 @@ func addservice(w http.ResponseWriter, r *http.Request) {
 		Code : 1,
 	}
 	rtnJson, _ := json.Marshal(rtnNormal)
-	fmt.Fprint(w, string(rtnJson))
+	rtnStr := string(rtnJson)
+	fmt.Fprintf(w, rtnStr)
+
+	apilog(input, api, rtnStr)   // 日志记录
 }
 

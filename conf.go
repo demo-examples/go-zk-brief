@@ -5,6 +5,8 @@ import (
 )
 
 const (
+	VERSION = "0.1.0"
+
 	LISTEN = ":9090"            // 应用启动端口
 	KEY = "1122-3434"           // 验证码
 	ZKPATH = "/soa/services"    // 基于此目录下
@@ -21,6 +23,7 @@ const (
 //	ZKPORT = 2181
 
 var ZKHOST map[string] string= map[string] string {
+	"test" : "192.168.35.141:2181",
 	"qa" : "192.168.35.141:2181",
 //	"qa" : "192.168.129.213:2182",
 	"yz" : "192.168.129.213:2181",

@@ -1,14 +1,14 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
-	"log"
+	"flag"
 )
 
 func main() {
+	flag.Parse()
 
-	fmt.Println("pri_api started...")
+	logInfof("spr_api version:%s started...\n", VERSION)
 	http.HandleFunc("/servicelist", servicelist)
 	http.HandleFunc("/serverlist", serverlist)
 //	http.HandleFunc("/createnode", createnode)
@@ -19,7 +19,7 @@ func main() {
 
 	err := http.ListenAndServe(LISTEN, nil)
 	if err != nil {
-		log.Fatal("ListenAndServe:", err)
+		logInfof("ListenAndServe:", err)
 	}
 
 }

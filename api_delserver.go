@@ -9,14 +9,17 @@ import(
 
 
 func delserver(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("delserver start...")
-	defer handleError(w)
 	r.ParseMultipartForm(DEFAULT_MIN_MEMORY)
 
 	keys := r.Form["key"]
 	destNames := r.Form["destName"]
 	zkidcs := r.Form["zkidc"]
 	serverKey := r.Form["serverKey"]
+
+	input := fmt.Sprintf("keys:%v, zkidcs:%v, destNames:%v, serverKey:%v", keys, zkidcs, destNames, serverKey)
+	api := "delserver"
+	defer handleError(w, input, api)
+
 
 	// 参数检验
 	checkParams(keys, destNames, zkidcs, serverKey)
@@ -41,7 +44,10 @@ func delserver(w http.ResponseWriter, r *http.Request) {
 		Code : 1,
 	}
 	rtnJson, _ := json.Marshal(rtnNormal)
-	fmt.Fprint(w, string(rtnJson))
+	rtnStr := string(rtnJson)
+	fmt.Fprintf(w, rtnStr)
+
+	apilog(input, api, rtnStr)   // 日志记录
 
 }
 

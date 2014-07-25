@@ -8,13 +8,16 @@ import(
 )
 
 func delservice(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("delservice start...")
-	defer handleError(w)
 	r.ParseMultipartForm(DEFAULT_MIN_MEMORY)
 
 	keys := r.Form["key"]
 	destNames := r.Form["destName"]
 	zkidcs := r.Form["zkidc"]
+
+	input := fmt.Sprintf("keys:%v, zkidcs:%v, destNames:%v", keys, zkidcs, destNames)
+	api := "delservice"
+	defer handleError(w, input, api)
+
 
 	// 参数检验
 	checkParams(keys, destNames, zkidcs)
@@ -39,7 +42,10 @@ func delservice(w http.ResponseWriter, r *http.Request) {
 		Code : 1,
 	}
 	rtnJson, _ := json.Marshal(rtnNormal)
-	fmt.Fprint(w, string(rtnJson))
+	rtnStr := string(rtnJson)
+	fmt.Fprintf(w, rtnStr)
+
+	apilog(input, api, rtnStr)   // 日志记录
 
 }
 

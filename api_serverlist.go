@@ -9,28 +9,23 @@ import(
 
 
 func serverlist(w http.ResponseWriter, r *http.Request) {
-
-	defer handleError(w)
 	r.ParseForm()
 	
 	keys := r.Form["key"]
 	destNames := r.Form["destName"]
 	zkidcs := r.Form["zkidc"]
 
-	fmt.Println(keys, destNames, zkidcs)
+	input := fmt.Sprintf("keys:%v, zkidcs:%v, destName:%v", keys, zkidcs, destNames)
+	api := "serverlist"
+	defer handleError(w, input, api)
 
 	var rtnError RtnError
-//	var rtnServers RtnServerlist
-//	var rtnJson []byte
 	rtnError.Code = 0
 
 	// 参数检验
 	checkParams(destNames, zkidcs, keys)
 	// 判断key是否正确
 	checkKeys(keys[0])
-
-//	zkidc = zkidcs[0]
-	fmt.Println("connect zk!")
 
 	c, _, err := zk.Connect([]string{ZKHOST[zkidcs[0]]}, ZKTIMEOUT)
 	if(err != nil) {
@@ -76,6 +71,9 @@ func serverlist(w http.ResponseWriter, r *http.Request) {
 	if(err != nil) {
 		panic(err)
 	}
-	fmt.Fprintf(w, string(jsonRtn))
+	rtnStr := string(jsonRtn)
+	fmt.Fprintf(w, rtnStr)
+
+	apilog(input, api, rtnStr)   // 日志记录
 }
 
