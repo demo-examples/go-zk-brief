@@ -17,7 +17,7 @@ func (e *ApiError) Error() string {
 	return rtn
 }
 
-func handleError(w http.ResponseWriter, api string, input string){
+func handleError(w http.ResponseWriter, input string, api string){
 
 	if e:= recover(); e != nil {
 		var rtnError RtnError
