@@ -6,9 +6,18 @@ import (
 )
 
 func main() {
-	flag.Parse()
-
 	logInfof("spr_api version:%s started...\n", VERSION)
+
+	flag.Parse()
+	if err := InitConfig(); err != nil {
+		logError("error when init config...")
+		panic(err)
+	}
+	if err := initZK(); err != nil {
+		logError("error when init zk...")
+		panic(err)
+	}
+
 	http.HandleFunc("/servicelist", servicelist)
 	http.HandleFunc("/serverlist", serverlist)
 //	http.HandleFunc("/createnode", createnode)
@@ -17,9 +26,11 @@ func main() {
 	http.HandleFunc("/addserver", addserver)
 	http.HandleFunc("/delserver", delserver)
 
-	err := http.ListenAndServe(LISTEN, nil)
+	debugf("[%T]%v\n", Conf.HttpBind, Conf.HttpBind)
+
+	err := http.ListenAndServe(Conf.HttpBind, nil)
 	if err != nil {
-		logInfof("ListenAndServe:", err)
+		logInfo("ListenAndServe:", err)
 	}
 
 }

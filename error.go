@@ -12,6 +12,12 @@ type ApiError struct{
 	Err   interface{}
 }
 
+func init() {
+
+
+
+}
+
 func (e *ApiError) Error() string {
 	rtn := fmt.Sprintf("[%s]\tparams:%s\t%v", e.Api, e.Input, e.Err)
 	return rtn

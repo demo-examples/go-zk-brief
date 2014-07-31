@@ -4,7 +4,6 @@ import(
 	"fmt"
 	"net/http"
 	"encoding/json"
-	"github.com/samuel/go-zookeeper/zk"
 )
 
 
@@ -28,17 +27,13 @@ func addserver(w http.ResponseWriter, r *http.Request) {
 	// 判断key是否正确
 	checkKeys(keys[0])
 
-	c, _, err := zk.Connect([]string{ZKHOST[zkidcs[0]]}, ZKTIMEOUT)
-	if err != nil {
-		panic(err)
-	}
-	defer c.Close()
+	c := ZkConns[zkidcs[0]]
 
-	zkServerPath := ZKPATH + "/" + destNames[0] + "/member_"
+	zkServerPath := Conf.ZkPath + "/" + destNames[0] + "/smember_"
 
 	serverValue := getServerValue(serverHost[0], serverPort[0])
 
-	_, err = c.Create(zkServerPath, serverValue, zk.FlagSequence, zk.WorldACL(0x1f))
+	_, err = c.Create(zkServerPath, serverValue, FlagSequence, DefaultACL)
 
 	if err != nil {
 		panic(err)

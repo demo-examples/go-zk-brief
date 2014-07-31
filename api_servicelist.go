@@ -4,11 +4,11 @@ import(
 	"fmt"
 	"net/http"
 	"encoding/json"
-	"github.com/samuel/go-zookeeper/zk"
 )
 
 
 func servicelist(w http.ResponseWriter, r *http.Request) {
+	debug("servicelist")
 	r.ParseForm()
 
 	keys := r.Form["key"]
@@ -26,15 +26,15 @@ func servicelist(w http.ResponseWriter, r *http.Request) {
 	checkParams(zkidcs, keys)
 	// 判断key是否正确
 	checkKeys(keys[0])
+	debug(zkidcs[0])
 
-//	zkidc = zkidcs[0]
-//	fmt.Println("connect zk!")
-	c, _, err := zk.Connect([]string{ZKHOST[zkidcs[0]]}, ZKTIMEOUT)
-	if(err != nil) {
-		panic(err)
-	}
-	defer c.Close()
-	children, _, err := c.Children(ZKPATH)
+	c := ZkConns[zkidcs[0]]
+	debugf("[%T]%v\n", c, c)
+
+	children, _, err := c.Children(Conf.ZkPath)
+
+	debugf("[%T]%v\n", children, children)
+
 	if err != nil {
 		panic(err)
 	}

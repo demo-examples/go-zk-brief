@@ -8,7 +8,7 @@ import(
 
 // 检查key是否正确，正确返回true, 错误返回false
 func checkKeys(key string) {
-	if key == KEY {
+	if key == Conf.Key {
 		return
 	}
 	panic("wrong keys")

@@ -2,43 +2,41 @@ package main
 
 import (
 	"time"
+	"flag"
 	"github.com/Terry-Mao/goconf"
 )
 
 var(
-	Conf *config
+	Conf         *Config
+	confFile     string
 )
 
 type Config struct {
-	HttpBind           []string     `goconf:"core:http.bind:,"`
-	Key                []string     `goconf:"core:key"`
-	ZkPath             []string     `goconf:"zk:path:,"`
-	ZkTimeout          []string     `goconf:"zk.timeout:,"`
-	ZkAddr             []string     `goconf:"zk.addr:,"`
-	
+	HttpBind           string     `goconf:"core:http.bind"`
+	Key                string     `goconf:"core:key"`
+	ZkPath             string     `goconf:"core:zkpath"`
+
+	ZkQAAddr           string          `goconf:"zkQA:addr"`
+	ZkQATimeout        time.Duration   `goconf:"zkQA:timeout:time"`
+	ZkQAName           string          `goconf:"zkQA:name"`
+
+	ZkYZAddr           string          `goconf:"zkYZ:addr"`
+	ZkYZTimeout        time.Duration   `goconf:"zkYZ:timeout:time"`
+	ZkYZName           string          `goconf:"zkYZ:name"`
+
+	ZkG1Addr           string          `goconf:"zkG1:addr"`
+	ZkG1Timeout        time.Duration   `goconf:"zkG1:timeout:time"`
+	ZkG1Name           string          `goconf:"zkG1:name"`
+
 }
 
 const (
-	VERSION = "0.1.0"
+	VERSION = "0.2.0"
 
 	DEFAULT_MIN_MEMORY = 32 << 20
 	DEFAULT_MAX_MEMORY = 1024
 
 )
-
-//	ZKHOST = "192.168.35.141"
-//	ZKHOST = "192.168.129.213"
-//	ZKHOST = "192.168.113.212"
-//	ZKPORT = 2181
-
-var ZKHOST map[string] string= map[string] string {
-	"test" : "192.168.35.141:2181",
-//	"qa" : "192.168.35.141:2181",
-	"qa" : "192.168.129.213:2181",
-	"yz" : "yz-log-master-02:2181",
-	"g1" : "g1-cdc-wrk-02:2181",
-}
-
 
 func init() {
 	flag.StringVar(&confFile, "c", "config.conf", "set config file path")
@@ -46,13 +44,25 @@ func init() {
 
 func InitConfig() error {
 	gconf := goconf.New()
-	if err := goconf.Parse(confFile); err != nil {
-		panic(fmt.Sprint("when parsing the file:%v, export:%v", confFile, err))
+	if err := gconf.Parse(confFile); err != nil {
+		return err
 	}
 
 	Conf = &Config {
-		HttpBind:     ":9090",
-		Key:          "1122-3434",
-		ZkPath:       ""
+		HttpBind:     ":9999",
+		Key:          "1122-3333",
+		ZkPath:       "/soa/services2",
+		ZkQAName:     "abc",
 	}
+//	debugf("%v\n", Conf)
+	if err := gconf.Unmarshal(Conf); err != nil {
+		return err
+	}
+//	debugf("%v\n", Conf)
+	return nil
+
 }
+
+
+
+

@@ -4,7 +4,6 @@ import(
 	"fmt"
 	"net/http"
 	"encoding/json"
-	"github.com/samuel/go-zookeeper/zk"
 )
 
 
@@ -26,15 +25,11 @@ func delserver(w http.ResponseWriter, r *http.Request) {
 	// 判断key是否正确
 	checkKeys(keys[0])
 
-	c, _, err := zk.Connect([]string{ZKHOST[zkidcs[0]]}, ZKTIMEOUT)
-	if err != nil {
-		panic(err)
-	}
-	defer c.Close()
+	c := ZkConns[zkidcs[0]]
 
-	zkServerPath := ZKPATH + "/" + destNames[0] + "/" + serverKey[0]
+	zkServerPath := Conf.ZkPath + "/" + destNames[0] + "/" + serverKey[0]
 
-//	fmt.Println(zkServerPath)
+//	debug(zkServerPath)
 	err = c.Delete(zkServerPath, -1)
 
 	if err != nil {

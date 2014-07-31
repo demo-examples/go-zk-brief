@@ -5,7 +5,7 @@ import(
 	"github.com/golang/glog"
 )
 func init() {
-	fmt.Println("log start...")
+//	fmt.Println("log start...")
 	defer glog.Flush()
 }
 func logInfo(msg ...interface{}) {
@@ -37,3 +37,11 @@ func apilog(input string, api string, rtn string) {
 }
 
 
+
+func debug(args ...interface{}) {
+	fmt.Println(args)
+}
+
+func debugf(format string, args ...interface{}) {
+	fmt.Printf(format, args...)
+}
