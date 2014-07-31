@@ -40,9 +40,9 @@ func getServerValue(host string, strPort string) []byte{
 		Status : "ALIVE",
 		Shard : 1,
 	}
-//	fmt.Println(serverValue)
+//	debug(serverValue)
 	valueJson, err := json.Marshal(serverValue)
-//	fmt.Println(string(valueJson), err)
+//	debug(string(valueJson))
 	if err != nil {
 		panic(err)
 	}

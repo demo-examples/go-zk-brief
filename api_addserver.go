@@ -20,8 +20,6 @@ func addserver(w http.ResponseWriter, r *http.Request) {
 	api := "addserver"
 	defer handleError(w, input, api)
 
-
-
 	// 参数检验
 	checkParams(keys, destNames, zkidcs, serverHost, serverPort)
 	// 判断key是否正确
