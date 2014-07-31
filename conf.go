@@ -36,7 +36,7 @@ const (
 	DEFAULT_MIN_MEMORY = 32 << 20
 	DEFAULT_MAX_MEMORY = 1024
 
-	ZKPREFIX = "smember_"
+	ZKPREFIX = "member_"
 )
 
 func init() {
