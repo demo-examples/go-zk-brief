@@ -6,9 +6,9 @@ import (
 )
 
 func main() {
+	flag.Parse()
 	logInfof("spr_api version:%s started...\n", VERSION)
 
-	flag.Parse()
 	if err := InitConfig(); err != nil {
 		logError("error when init config...")
 		panic(err)
