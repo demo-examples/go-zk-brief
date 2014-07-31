@@ -24,9 +24,10 @@ type ServerConf struct {
 }
 
 type ServerConf2 struct {
-	Host string     `json:"host"`
-	Port int        `json:"port"`
-	Key string      `json:"key"`
+	Host     string     `json:"host"`
+	Port     int        `json:"port"`
+	Key      string     `json:"key"`
+	Readonly bool       `json:"readonly"`
 }
 
 type Service struct {

@@ -29,7 +29,7 @@ func addserver(w http.ResponseWriter, r *http.Request) {
 
 	c := ZkConns[zkidcs[0]]
 
-	zkServerPath := Conf.ZkPath + "/" + destNames[0] + "/smember_"
+	zkServerPath := Conf.ZkPath + "/" + destNames[0] + "/" + ZKPREFIX
 
 	serverValue := getServerValue(serverHost[0], serverPort[0])
 

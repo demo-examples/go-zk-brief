@@ -3,6 +3,7 @@ package main
 import(
 	"fmt"
 	"net/http"
+	"strings"
 	"encoding/json"
 )
 
@@ -36,7 +37,7 @@ func serverlist(w http.ResponseWriter, r *http.Request) {
 
 	var servers []ServerConf2
 	for _, child := range children {
-		fmt.Println(child)
+		debug(child)
 		jsonServer, _, err := c.Get(zkServerPath + "/" + child)
 		if(err != nil) {
 			panic(err)
@@ -49,9 +50,10 @@ func serverlist(w http.ResponseWriter, r *http.Request) {
 		}
 
 		server := ServerConf2 {
-			Host : zkserver.ServiceEndpoint.Host,
-			Port : zkserver.ServiceEndpoint.Port,
-			Key : child,
+			Host     : zkserver.ServiceEndpoint.Host,
+			Port     : zkserver.ServiceEndpoint.Port,
+			Key      : child,
+			Readonly : strings.HasPrefix(child, ZKPREFIX),
 		}
 
 		servers = append(servers, server)

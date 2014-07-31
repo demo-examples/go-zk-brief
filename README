@@ -83,15 +83,15 @@ url: serverlist/
 返回值::
 
     {code:1, servers: [
-        {host: <host>, port:<port>, key: <key>}
+        {host: <host>, port:<port>, key: <key>, readonly: <readonly>}
     ]}
 
 举例说明::
 
     {"code" : 1, "servers" : [
-       {"host" : "192.168.1.1", "port" : 8080, "key" : "memeber_000000001"},
-       {"host" : "192.168.1.2", "port" : 8080, "key" : "memeber_000000002"},
-       {"host" : "192.168.1.3", "port" : 8080, "key" : "memeber_000000003"}
+       {"host" : "192.168.1.1", "port" : 8080, "key" : "memeber_000000001", readonly: true},
+       {"host" : "192.168.1.2", "port" : 8080, "key" : "memeber_000000002", readonly: true},
+       {"host" : "192.168.1.3", "port" : 8080, "key" : "memeber_000000003", readonly: true}
     ]}
 
 
