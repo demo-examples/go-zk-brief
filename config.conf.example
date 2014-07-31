@@ -1,20 +1,24 @@
 [core]
 
-http.bind ":9090"
-key "1122-3434"
-path "/soa/services"
+http.bind :9090
+key 1122-3434
+zkpath /soa/services
 
 [zkQA]
+# the idc of qa
+name qa
 timeout 1s
-addr "192.168.129.213:2181"
-
+addr 192.168.35.141:2181
 
 [zkYZ]
+# the idc of qa
+name yz
 timeout 1s
-#addr "yz-log-master-02:2181"
-addr "192.168.35.141:2181"
+#addr yz-log-master-02:2181
+addr 192.168.35.141:2181
 
 [zkG1]
+name g1
 timeout 1s
-#addr "g1-cdc-wrk-02:2181"
-addr "192.168.35.141:2181"
+#addr g1-cdc-wrk-02:2181
+addr 192.168.35.141:2181
