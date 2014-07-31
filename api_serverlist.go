@@ -53,7 +53,7 @@ func serverlist(w http.ResponseWriter, r *http.Request) {
 			Host     : zkserver.ServiceEndpoint.Host,
 			Port     : zkserver.ServiceEndpoint.Port,
 			Key      : child,
-			Readonly : strings.HasPrefix(child, ZKPREFIX),
+			Readonly : !strings.HasPrefix(child, ZKPREFIX),
 		}
 
 		servers = append(servers, server)
