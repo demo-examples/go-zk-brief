@@ -2,9 +2,17 @@ package main
 
 import(
 	"strconv"
+	"strings"
 	"encoding/json"
 )
 
+// 检查服务类型是否以"smember_"开头
+func checkServerKey(serverKey string) {
+	if strings.HasPrefix(serverKey, ZKPREFIX) {
+		return
+	}
+	panic("auth refused: server type")
+}
 
 // 检查key是否正确，正确返回true, 错误返回false
 func checkKeys(key string) {
