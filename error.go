@@ -4,6 +4,7 @@ import(
 	"encoding/json"
 	"net/http"
 	"fmt"
+	"github.com/golang/glog"
 )
 
 type ApiError struct{
@@ -13,9 +14,6 @@ type ApiError struct{
 }
 
 func init() {
-
-
-
 }
 
 func (e *ApiError) Error() string {
@@ -35,7 +33,7 @@ func handleError(w http.ResponseWriter, input string, api string){
 		fmt.Fprintf(w, string(rtnJson))   // 返回值
 
 		apiErr := &ApiError{api, input, e}
-		logError(apiErr.Error())
+		glog.Error(apiErr.Error())
 	}
 
 }

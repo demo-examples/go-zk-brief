@@ -28,6 +28,9 @@ type Config struct {
 	ZkG1Timeout        time.Duration   `goconf:"zkG1:timeout:time"`
 	ZkG1Name           string          `goconf:"zkG1:name"`
 
+	BkPath             string          `goconf:"backup:path"`
+	BkInterval         time.Duration   `goconf:"backup:interval:time"`
+
 }
 
 const (

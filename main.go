@@ -3,20 +3,23 @@ package main
 import (
 	"net/http"
 	"flag"
+	"github.com/golang/glog"
 )
 
 func main() {
 	flag.Parse()
-	logInfof("spr_api version:%s started...\n", VERSION)
+	glog.Infof("spr_api version:%s started...\n", VERSION)
 
 	if err := InitConfig(); err != nil {
-		logError("error when init config...")
+		glog.Error("error when init config...")
 		panic(err)
 	}
 	if err := initZK(); err != nil {
-		logError("error when init zk...")
+		glog.Error("error when init zk...")
 		panic(err)
 	}
+
+	go backup()   // 定时备份zk
 
 	http.HandleFunc("/servicelist", servicelist)
 	http.HandleFunc("/serverlist", serverlist)
@@ -30,7 +33,7 @@ func main() {
 
 	err := http.ListenAndServe(Conf.HttpBind, nil)
 	if err != nil {
-		logInfo("ListenAndServe:", err)
+		glog.Errorf("ListenAndServe:", err)
 	}
 
 }

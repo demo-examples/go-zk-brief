@@ -22,3 +22,12 @@ name g1
 timeout 1s
 #addr g1-cdc-wrk-02:2181
 addr 192.168.35.141:2181
+
+
+# 备份使用
+[backup]
+# 备份间隔 1s, 1m, 1h, 1d
+interval 1m
+path /tmp
+
+

@@ -2,3 +2,4 @@ go-zk-brief
 sfr_api
 nohup.out
 config.conf
+logs/
