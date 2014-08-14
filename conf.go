@@ -34,7 +34,7 @@ type Config struct {
 }
 
 const (
-	VERSION = "0.2.0"
+	VERSION = "0.3.0"
 
 	DEFAULT_MIN_MEMORY = 32 << 20
 	DEFAULT_MAX_MEMORY = 1024
