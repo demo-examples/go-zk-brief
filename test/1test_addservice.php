@@ -1,8 +1,8 @@
 <?php
 
 $post_string = array('key'=>'1122-3434', 'destName' => 'hello.test.unit', 'zkidc'=>'qa');
-#$url = '192.168.35.141:9090/servicelist';
-$url = '127.0.0.1:9090/addservice';
+$url = '192.168.35.141:9090/addservice';
+#$url = '127.0.0.1:9090/addservice';
 
 
 $ch = curl_init();

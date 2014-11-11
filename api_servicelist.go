@@ -2,6 +2,7 @@ package main
 
 import(
 	"fmt"
+	"sort"
 	"net/http"
 	"encoding/json"
 )
@@ -46,7 +47,7 @@ func servicelist(w http.ResponseWriter, r *http.Request) {
 	}
 
 //	fmt.Println(services)
-
+	sort.Stable(ByServiceName(services))
 	rtnServices := &RtnServicelist{
 		Code : 1,
 		Services : services,
@@ -60,4 +61,10 @@ func servicelist(w http.ResponseWriter, r *http.Request) {
 
 }
 
+type ByServiceName []Service
+
+
+func (p ByServiceName) Len() int    { return len(p) }
+func (p ByServiceName) Swap(i, j int)  { p[i], p[j] = p[j], p[i] }
+func (p ByServiceName) Less(i, j int) bool { return p[i].Service > p[j].Service }
 
