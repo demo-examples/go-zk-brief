@@ -66,5 +66,5 @@ type ByServiceName []Service
 
 func (p ByServiceName) Len() int    { return len(p) }
 func (p ByServiceName) Swap(i, j int)  { p[i], p[j] = p[j], p[i] }
-func (p ByServiceName) Less(i, j int) bool { return p[i].Service > p[j].Service }
+func (p ByServiceName) Less(i, j int) bool { return p[i].Service < p[j].Service }
 
